@@ -54,16 +54,21 @@ app.post("/players/", async (request, response) => {
 
 //Get uniquePlayer API
 app.get("/players/:playerId/", async (request, response) => {
-  const playerId = request.params;
+  const { playerId } = request.params;
   const getPlayerIdQuery = `SELECT * FROM cricket_team WHERE player_id = ${playerId}`;
   const uniquePlayer = await db.get(getPlayerIdQuery);
-
-  response.send(uniquePlayer);
+  const result = {
+    playerId: uniquePlayer.player_id,
+    playerName: uniquePlayer.player_name,
+    jerseyNumber: uniquePlayer.jersey_number,
+    role: uniquePlayer.role,
+  };
+  response.send(result);
 });
 
 //Update player API
 app.put("/players/:playerId/", async (request, response) => {
-  const playerId = request.params;
+  const { playerId } = request.params;
   const playerDetails = request.body;
   const { playerName, jerseyNumber, role } = playerDetails;
   const updatePlayerQuery = `UPDATE cricket_team
@@ -74,8 +79,8 @@ app.put("/players/:playerId/", async (request, response) => {
 });
 
 //Delete player API
-app.delete("players/:playerId/", async (request, response) => {
-  const playerId = request.params;
+app.delete("/players/:playerId/", async (request, response) => {
+  const { playerId } = request.params;
   const deletePlayerQuery = `DELETE FROM cricket_team WHERE player_id = ${playerId}`;
   await db.run(deletePlayerQuery);
   response.send("Player Removed");
